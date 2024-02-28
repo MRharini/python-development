@@ -1,0 +1,65 @@
+class Appointment:
+    def __init__(self, patient_name, doctor_name, date_time):
+        self.patient_name = patient_name
+        self.doctor_name = doctor_name
+        self.date_time = date_time
+
+class AppointmentScheduler:
+    def __init__(self):
+        self.appointments = []
+
+    def schedule_appointment(self, appointment):
+        self.appointments.append(appointment)
+        print("Appointment scheduled successfully!")
+
+    def list_appointments(self):
+        if self.appointments:
+            print("Scheduled Appointments:")
+            for index, appointment in enumerate(self.appointments, start=1):
+                print(f"{index}. Patient: {appointment.patient_name}, Doctor: {appointment.doctor_name}, Date: {appointment.date_time}")
+        else:
+            print("No appointments scheduled.")
+
+    def cancel_appointment(self, appointment_index):
+        if appointment_index >= 0 and appointment_index < len(self.appointments):
+            canceled_appointment = self.appointments.pop(appointment_index)
+            print(f"Appointment with Patient: {canceled_appointment.patient_name}, Doctor: {canceled_appointment.doctor_name}, Date: {canceled_appointment.date_time} has been canceled.")
+        else:
+            print("Invalid appointment index.")
+
+def main():
+    scheduler = AppointmentScheduler()
+
+    while True:
+        print("\nMedical Appointment System")
+        print("1. Schedule Appointment")
+        print("2. List Appointments")
+        print("3. Cancel Appointment")
+        print("4. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            patient_name = input("Enter patient name: ")
+            doctor_name = input("Enter doctor name: ")
+            date_time = input("Enter date and time (YYYY-MM-DD HH:MM): ")
+            appointment = Appointment(patient_name, doctor_name, date_time)
+            scheduler.schedule_appointment(appointment)
+
+        elif choice == '2':
+            scheduler.list_appointments()
+
+        elif choice == '3':
+            scheduler.list_appointments()
+            appointment_index = int(input("Enter the index of the appointment to cancel: ")) - 1
+            scheduler.cancel_appointment(appointment_index)
+
+        elif choice == '4':
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
