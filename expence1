@@ -1,0 +1,120 @@
+class User:
+    def __init__(self, name):
+        self.name = name
+        self.balance = 0
+
+    def add_expense(self, amount):
+        self.balance -= amount
+
+    def receive_payment(self, amount):
+        self.balance += amount
+
+class Expense:
+    def __init__(self, description, amount, payer, users):
+        self.description = description
+        self.amount = amount
+        self.payer = payer
+        self.users = users
+
+    def split_expense(self):
+        num_users = len(self.users)
+        split_amount = self.amount / num_users
+        self.payer.add_expense(self.amount)
+        for user in self.users:
+            user.receive_payment(split_amount)
+
+class Group:
+    def __init__(self, name):
+        self.name = name
+        self.users = []
+
+    def add_user(self, user):
+        self.users.append(user)
+
+    def add_expense(self, expense):
+        expense.split_expense()
+
+def create_user():
+    name = input("Enter user's name: ")
+    return User(name)
+
+def create_expense(users):
+    description = input("Enter expense description: ")
+    amount = float(input("Enter expense amount: "))
+    payer_name = input("Enter payer's name: ")
+    for user in users:
+        if user.name == payer_name:
+            payer = user
+            break
+    else:
+        print("Payer not found.")
+        return None
+
+    user_names = input("Enter names of users to split the expense (separated by comma): ")
+    expense_users = []
+    for user_name in user_names.split(','):
+        for user in users:
+            if user.name == user_name.strip():
+                expense_users.append(user)
+                break
+        else:
+            print(f"User '{user_name.strip()}' not found.")
+            return None
+
+    return Expense(description, amount, payer, expense_users)
+
+def make_payment(users):
+    payer_name = input("Enter payer's name: ")
+    for user in users:
+        if user.name == payer_name:
+            payer = user
+            break
+    else:
+        print("Payer not found.")
+        return None
+
+    amount = float(input("Enter payment amount: "))
+    payee_name = input("Enter payee's name: ")
+    for user in users:
+        if user.name == payee_name:
+            user.receive_payment(amount)
+            payer.add_expense(amount)
+            return
+    else:
+        print("Payee not found.")
+
+def main():
+    group_name = input("Enter group name: ")
+    group = Group(group_name)
+
+    num_users = int(input("Enter number of users: "))
+    for _ in range(num_users):
+        user = create_user()
+        group.add_user(user)
+
+    while True:
+        print("\nOptions:")
+        print("1. Add expense")
+        print("2. Make payment")
+        print("3. Show balances")
+        print("4. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            expense = create_expense(group.users)
+            if expense:
+                group.add_expense(expense)
+        elif choice == '2':
+            make_payment(group.users)
+        elif choice == '3':
+            print("Balances:")
+            for user in group.users:
+                print(f"{user.name}: ${user.balance}")
+        elif choice == '4':
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
